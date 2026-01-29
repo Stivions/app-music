@@ -1,35 +1,32 @@
+- name: Export IPA
+  script: |
+    set -e
+    mkdir -p build/export
 
-workflows:
-  ios_offline_ipa:
-    name: iOS Offline IPA
-    max_build_duration: 60
-    instance_type: mac_mini_m2
-    environment:
-      vars:
-        XCODE_PROJECT: "offline-music-player/Offline/Offline.xcodeproj"
-        XCODE_SCHEME: "Offline"
-      xcode: latest
-    scripts:
-      - name: Install dependencies
-        script: |
-          echo "No dependencies needed"
+    cat > ExportOptions.plist <<'PLIST'
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+      <key>method</key>
+      <string>development</string>
+      <key>signingStyle</key>
+      <string>manual</string>
+      <key>compileBitcode</key>
+      <false/>
+      <key>stripSwiftSymbols</key>
+      <true/>
+      <key>destination</key>
+      <string>export</string>
+    </dict>
+    </plist>
+    PLIST
 
-      - name: Build IPA
-        script: |
-          xcodebuild clean archive \
-            -project "$XCODE_PROJECT" \
-            -scheme "$XCODE_SCHEME" \
-            -configuration Release \
-            -archivePath build/Offline.xcarchive \
-            CODE_SIGNING_ALLOWED=NO
-
-      - name: Export IPA
-        script: |
-          mkdir -p build/export
-          xcodebuild -exportArchive \
-            -archivePath build/Offline.xcarchive \
-            -exportPath build/export \
-            -exportOptionsPlist /usr/libexec/PlistBuddy
-
-    artifacts:
-      - build/export/*.ipa
+    xcodebuild -exportArchive \
+      -archivePath build/Offline.xcarchive \
+      -exportPath build/export \
+      -exportOptionsPlist ExportOptions.plist \
+      CODE_SIGNING_ALLOWED=NO
+artifacts:
+  - build/Offline.xcarchive
+  - build/export/*.ipa
