@@ -7,20 +7,23 @@ workflows:
     environment:
       xcode: latest
       vars:
-        # Ruta real a tu proyecto
-        vars:
         XCODE_PROJECT: "offline-music-player/Offline/Offline.xcodeproj"
         XCODE_SCHEME: "Offline"
 
     scripts:
       - name: Show repo tree (debug)
         script: |
+          set -e
+          echo "PWD:"
           pwd
+          echo "ROOT:"
           ls -la
           echo "----"
+          echo "offline-music-player:"
           ls -la offline-music-player || true
           echo "----"
-          find . -maxdepth 4 -name "*.xcodeproj" -print
+          echo "Find xcodeproj:"
+          find . -maxdepth 6 -name "*.xcodeproj" -print
 
       - name: Build archive (no codesign)
         script: |
@@ -32,7 +35,7 @@ workflows:
             -archivePath build/Offline.xcarchive \
             CODE_SIGNING_ALLOWED=NO
 
-      - name: Export IPA (tries best-effort)
+      - name: Export IPA (best-effort, may fail without signing)
         script: |
           set -e
           mkdir -p build/export
@@ -56,7 +59,7 @@ workflows:
           </plist>
           PLIST
 
-          # Esto puede fallar si Apple exige firma; por eso guardamos el .xcarchive como artifact sí o sí
+          # Export puede fallar sin firma; no detenemos el build
           xcodebuild -exportArchive \
             -archivePath build/Offline.xcarchive \
             -exportPath build/export \
