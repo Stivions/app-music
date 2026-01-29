@@ -8,7 +8,8 @@ workflows:
       xcode: latest
       vars:
         # Ruta real a tu proyecto
-        XCODE_PROJECT: "offline-music-player/Offline.xcodeproj"
+        vars:
+        XCODE_PROJECT: "offline-music-player/Offline/Offline.xcodeproj"
         XCODE_SCHEME: "Offline"
 
     scripts:
