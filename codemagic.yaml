@@ -27,6 +27,3 @@
       -exportPath build/export \
       -exportOptionsPlist ExportOptions.plist \
       CODE_SIGNING_ALLOWED=NO
-artifacts:
-  - build/Offline.xcarchive
-  - build/export/*.ipa
