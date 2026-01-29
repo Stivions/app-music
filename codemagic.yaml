@@ -1,1 +1,35 @@
 
+workflows:
+  ios_offline_ipa:
+    name: iOS Offline IPA
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      vars:
+        XCODE_PROJECT: "offline-music-player/Offline.xcodeproj"
+        XCODE_SCHEME: "Offline"
+      xcode: latest
+    scripts:
+      - name: Install dependencies
+        script: |
+          echo "No dependencies needed"
+
+      - name: Build IPA
+        script: |
+          xcodebuild clean archive \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -archivePath build/Offline.xcarchive \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Export IPA
+        script: |
+          mkdir -p build/export
+          xcodebuild -exportArchive \
+            -archivePath build/Offline.xcarchive \
+            -exportPath build/export \
+            -exportOptionsPlist /usr/libexec/PlistBuddy
+
+    artifacts:
+      - build/export/*.ipa
