@@ -6,7 +6,7 @@ workflows:
     instance_type: mac_mini_m2
     environment:
       vars:
-        XCODE_PROJECT: "offline-music-player/Offline.xcodeproj"
+        XCODE_PROJECT: "offline-music-player/Offline/Offline.xcodeproj"
         XCODE_SCHEME: "Offline"
       xcode: latest
     scripts:
